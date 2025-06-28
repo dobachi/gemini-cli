@@ -601,7 +601,13 @@ export function useTextBuffer({
 
       const newLines = [...lines];
       let newCursorRow = cursorRow;
-      let newCursorCol = cursorCol;
+      // Fix for Japanese IME input via npx: When cursor position is 0 but line has content,
+      // insert at the end of the line to maintain correct character order
+      const lineLength = newLines[newCursorRow]
+        ? cpLen(newLines[newCursorRow])
+        : 0;
+      let newCursorCol =
+        cursorCol === 0 && lineLength > 0 ? lineLength : cursorCol;
 
       const currentLine = (r: number) => newLines[r] ?? '';
 
